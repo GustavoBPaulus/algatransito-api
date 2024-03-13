@@ -57,7 +57,7 @@ public class Veiculo {
     @JsonProperty(access = Access.READ_ONLY)
     private OffsetDateTime dataApreensao;
 
-    @OneToMany(mappedBy = "veiculo")
+    @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL)
     private List<Autuacao> autuacoes = new ArrayList<Autuacao>();
 
     public void adicionarAutuacao(Autuacao autuacao){
