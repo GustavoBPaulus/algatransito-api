@@ -1,5 +1,6 @@
 package com.algaworks.algatransito.domain.model;
 
+import com.algaworks.algatransito.domain.Exception.NegocioException;
 import com.algaworks.algatransito.domain.validation.ValidationGroups;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -13,7 +14,6 @@ import jakarta.validation.groups.Default;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class Veiculo {
     private OffsetDateTime dataApreensao;
 
     @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL)
-    private List<Autuacao> autuacoes = new ArrayList<Autuacao>();
+    private List<Autuacao> autuacoes = new ArrayList<>();
 
     public void adicionarAutuacao(Autuacao autuacao){
         autuacao.setDataOcorrencia(OffsetDateTime.now());
@@ -67,5 +67,28 @@ public class Veiculo {
     }
 
 
+    public void apreender(){
+       if(estaApreendido()){
+            throw  new NegocioException("Veículo já se encontra apreendido");
+       }
+       setStatus(StatusVeiculo.APREENDIDO);
+       setDataApreensao(OffsetDateTime.now());
+    }
+
+    public void removerApreensao(){
+        if(naoEstaAprendido()){
+            throw new NegocioException("Veículo não está apreendido!");
+        }
+        setStatus(StatusVeiculo.REGULAR);
+        setDataApreensao(null);
+    }
+
+    public boolean estaApreendido(){
+        return StatusVeiculo.APREENDIDO.equals(getStatus());
+    }
+
+    public boolean naoEstaAprendido(){
+        return !estaApreendido();
+    }
 
 }
